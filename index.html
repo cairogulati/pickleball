@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
 
     body {
       background-color: var(--bg-dark);
-      background-image: 
+      background-image:
         radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.08), transparent 25%),
         radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08), transparent 25%);
       color: var(--text-main);
@@ -90,7 +91,7 @@
       font-size: 20px;
       color: var(--primary);
     }
-    
+
     .spinner {
       width: 40px;
       height: 40px;
@@ -101,7 +102,11 @@
       margin-right: 15px;
     }
 
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
     /* Leaderboard Grid */
     .leaderboard {
@@ -125,14 +130,17 @@
     .card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; height: 4px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
       background: var(--card-border);
       transition: all 0.3s ease;
     }
 
     .card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px var(--primary-glow);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--primary-glow);
       border-color: rgba(16, 185, 129, 0.3);
     }
 
@@ -141,9 +149,17 @@
     }
 
     /* Rank Styles */
-    .card[data-rank="1"]::before { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
-    .card[data-rank="2"]::before { background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
-    .card[data-rank="3"]::before { background: linear-gradient(90deg, #b45309, #d97706); }
+    .card[data-rank="1"]::before {
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    }
+
+    .card[data-rank="2"]::before {
+      background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+    }
+
+    .card[data-rank="3"]::before {
+      background: linear-gradient(90deg, #b45309, #d97706);
+    }
 
     .card-header {
       display: flex;
@@ -162,10 +178,18 @@
     .card:hover .rank {
       color: var(--primary);
     }
-    
-    .card[data-rank="1"] .rank { color: #fbbf24; }
-    .card[data-rank="2"] .rank { color: #cbd5e1; }
-    .card[data-rank="3"] .rank { color: #d97706; }
+
+    .card[data-rank="1"] .rank {
+      color: #fbbf24;
+    }
+
+    .card[data-rank="2"] .rank {
+      color: #cbd5e1;
+    }
+
+    .card[data-rank="3"] .rank {
+      color: #d97706;
+    }
 
     .player-name {
       font-size: 22px;
@@ -232,7 +256,7 @@
       background: var(--primary-hover);
       box-shadow: 0 12px 32px var(--primary-glow);
     }
-    
+
     .fab svg {
       width: 28px;
       height: 28px;
@@ -270,7 +294,7 @@
       border: 1px solid var(--card-border);
       align-self: flex-end;
     }
-    
+
     .fab-secondary:hover {
       background: #334155;
       border-color: var(--primary);
@@ -282,8 +306,10 @@
     .modal {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: var(--modal-bg);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
@@ -354,7 +380,7 @@
       gap: 16px;
     }
 
-    .form-group.row > div {
+    .form-group.row>div {
       flex: 1;
     }
 
@@ -366,7 +392,8 @@
       font-weight: 600;
     }
 
-    select, input {
+    select,
+    input {
       width: 100%;
       padding: 12px 16px;
       background: rgba(30, 41, 59, 0.6);
@@ -378,7 +405,8 @@
       transition: all 0.2s ease;
     }
 
-    select:focus, input:focus {
+    select:focus,
+    input:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
     }
@@ -411,6 +439,7 @@
         bottom: 20px;
         right: 20px;
       }
+
       .modal-content {
         margin: 20px;
         width: auto;
@@ -421,239 +450,246 @@
 
 <body>
 
-<header>
-  <h1>
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <defs>
-        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#10b981" />
-          <stop offset="100%" stop-color="#3b82f6" />
-        </linearGradient>
-      </defs>
-      <circle cx="12" cy="12" r="10"></circle>
-      <path d="M8 12c1.5 0 3-1.5 4-4"></path>
-      <path d="M16 12c-1.5 0-3 1.5-4 4"></path>
-      <path d="M12 8v8"></path>
-    </svg>
-    <span>Elite Pickleball</span> Tracker
-  </h1>
-</header>
+  <header>
+    <h1>
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" />
+            <stop offset="100%" stop-color="#3b82f6" />
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M8 12c1.5 0 3-1.5 4-4"></path>
+        <path d="M16 12c-1.5 0-3 1.5-4 4"></path>
+        <path d="M12 8v8"></path>
+      </svg>
+      <span>Elite Pickleball</span> Tracker
+    </h1>
+  </header>
 
-<div class="container">
-  <div class="section-title">
-    Leaderboard Ratings
+  <div class="container">
+    <div class="section-title">
+      Leaderboard Ratings
+    </div>
+
+    <div id="loader">
+      <div class="spinner"></div> Loading player stats...
+    </div>
+
+    <div id="leaderboard" class="leaderboard"></div>
   </div>
-  
-  <div id="loader">
-    <div class="spinner"></div> Loading player stats...
-  </div>
 
-  <div id="leaderboard" class="leaderboard"></div>
-</div>
-
-<div class="fab-container">
-  <!-- History / Delete FAB -->
-  <button class="fab fab-secondary" onclick="openHistoryModal()">
-    <div class="fab-tooltip">Match History</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="8" y1="6" x2="21" y2="6"></line>
-      <line x1="8" y1="12" x2="21" y2="12"></line>
-      <line x1="8" y1="18" x2="21" y2="18"></line>
-      <line x1="3" y1="6" x2="3.01" y2="6"></line>
-      <line x1="3" y1="12" x2="3.01" y2="12"></line>
-      <line x1="3" y1="18" x2="3.01" y2="18"></line>
-    </svg>
-  </button>
-
-  <!-- Add Player FAB -->
-  <button class="fab fab-secondary" onclick="openPlayerModal()">
-    <div class="fab-tooltip">Add New Player</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-      <circle cx="9" cy="7" r="4"></circle>
-      <line x1="19" y1="8" x2="19" y2="14"></line>
-      <line x1="22" y1="11" x2="16" y2="11"></line>
-    </svg>
-  </button>
-  
-  <!-- Add Match FAB -->
-  <button class="fab" onclick="openMatchModal()">
-    <div class="fab-tooltip">Record Match</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
-  </button>
-</div>
-
-<!-- MATCH MODAL -->
-<div id="matchModal" class="modal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeModal('matchModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
+  <div class="fab-container">
+    <!-- History / Delete FAB -->
+    <button class="fab fab-secondary" onclick="openHistoryModal()">
+      <div class="fab-tooltip">Match History</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
       </svg>
     </button>
-    
-    <h3>Record Match Result</h3>
 
-    <div class="form-group">
-      <label>Match Mode</label>
-      <select id="mode">
-        <option value="doubles">Doubles</option>
-        <option value="singles">Singles</option>
-      </select>
-    </div>
+    <!-- Add Player FAB -->
+    <button class="fab fab-secondary" onclick="openPlayerModal()">
+      <div class="fab-tooltip">Add New Player</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <line x1="19" y1="8" x2="19" y2="14"></line>
+        <line x1="22" y1="11" x2="16" y2="11"></line>
+      </svg>
+    </button>
 
-    <div class="form-group" style="padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px;">
-      <label style="color:#10b981;">Team A</label>
-      <select id="a1" style="margin-bottom: 8px;"></select>
-      <select id="a2"></select>
-    </div>
+    <!-- Add Match FAB -->
+    <button class="fab" onclick="openMatchModal()">
+      <div class="fab-tooltip">Record Match</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+  </div>
 
-    <div class="form-group" style="padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px;">
-      <label style="color:#3b82f6;">Team B</label>
-      <select id="b1" style="margin-bottom: 8px;"></select>
-      <select id="b2"></select>
-    </div>
+  <!-- MATCH MODAL -->
+  <div id="matchModal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('matchModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
 
-    <div class="form-group row">
-      <div>
-        <label>Team A Score</label>
-        <input id="scoreA" type="number" placeholder="Score A">
+      <h3>Record Match Result</h3>
+
+      <div class="form-group">
+        <label>Match Mode</label>
+        <select id="mode">
+          <option value="doubles">Doubles</option>
+          <option value="singles">Singles</option>
+        </select>
       </div>
-      <div>
-        <label>Team B Score</label>
-        <input id="scoreB" type="number" placeholder="Score B">
+
+      <div class="form-group" style="padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+        <label style="color:#10b981;">Team A</label>
+        <select id="a1" style="margin-bottom: 8px;"></select>
+        <select id="a2"></select>
+      </div>
+
+      <div class="form-group" style="padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+        <label style="color:#3b82f6;">Team B</label>
+        <select id="b1" style="margin-bottom: 8px;"></select>
+        <select id="b2"></select>
+      </div>
+
+      <div class="form-group row">
+        <div>
+          <label>Team A Score</label>
+          <input id="scoreA" type="number" placeholder="Score A">
+        </div>
+        <div>
+          <label>Team B Score</label>
+          <input id="scoreB" type="number" placeholder="Score B">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Passcode 🔐</label>
+        <input id="matchSecret" type="password" placeholder="Enter admin passcode">
+      </div>
+
+      <button class="submit" id="btnSubmitMatch" onclick="submitMatch()">Submit Result</button>
+    </div>
+  </div>
+
+  <!-- PLAYER MODAL -->
+  <div id="playerModal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('playerModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <h3>Add New Player</h3>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input id="playerName" type="text" placeholder="e.g. John Doe">
+      </div>
+
+      <div class="form-group">
+        <label>Passcode 🔐</label>
+        <input id="playerSecret" type="password" placeholder="Enter admin passcode">
+      </div>
+
+      <button class="submit" id="btnSubmitPlayer" onclick="submitPlayer()">Add Player</button>
+    </div>
+  </div>
+
+  <!-- HISTORY MODAL -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="close-modal" onclick="closeModal('historyModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <h3>Match History</h3>
+
+      <div id="historyList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+        <!-- Populated by JS -->
       </div>
     </div>
-
-    <div class="form-group">
-      <label>Passcode 🔐</label>
-      <input id="matchSecret" type="password" placeholder="Enter admin passcode">
-    </div>
-
-    <button class="submit" id="btnSubmitMatch" onclick="submitMatch()">Submit Result</button>
   </div>
-</div>
 
-<!-- PLAYER MODAL -->
-<div id="playerModal" class="modal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeModal('playerModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    
-    <h3>Add New Player</h3>
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbzUcMivqqk48FJTOzHGpnlRA5F2r262KB90ZlZoy3JY1Q7jojiKdBw753eo9ug-hthY/exec";
 
-    <div class="form-group">
-      <label>Full Name</label>
-      <input id="playerName" type="text" placeholder="e.g. John Doe">
-    </div>
+    let players = {};
+    let matches = [];
 
-    <div class="form-group">
-      <label>Passcode 🔐</label>
-      <input id="playerSecret" type="password" placeholder="Enter admin passcode">
-    </div>
+    // -------- LOAD DATA --------
+    async function loadPlayers() {
+      document.getElementById("loader").style.display = "flex";
+      document.getElementById("leaderboard").style.display = "none";
 
-    <button class="submit" id="btnSubmitPlayer" onclick="submitPlayer()">Add Player</button>
-  </div>
-</div>
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
 
-<!-- HISTORY MODAL -->
-<div id="historyModal" class="modal">
-  <div class="modal-content" style="max-width: 500px;">
-    <button class="close-modal" onclick="closeModal('historyModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    
-    <h3>Match History</h3>
+        console.log("API DATA:", data);
 
-    <div id="historyList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-      <!-- Populated by JS -->
-    </div>
-  </div>
-</div>
+        players = data.players || {};
+        matches = data.matches || [];
 
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzUcMivqqk48FJTOzHGpnlRA5F2r262KB90ZlZoy3JY1Q7jojiKdBw753eo9ug-hthY/exec";
+      } catch (error) {
+        alert("Failed to load data.");
+        console.error(error);
+      } finally {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("leaderboard").style.display = "grid";
 
-let players = {};
-let matches = [];
+        populateDropdowns();
+        renderLeaderboard();
 
-// -------- LOAD DATA --------
-async function loadPlayers() {
-  document.getElementById("loader").style.display = "flex";
-  document.getElementById("leaderboard").style.display = "none";
-  
-  try {
-    const res = await fetch(API);
-    const data = await res.json();
-
-    console.log("API DATA:", data);
-
-    players = data.players || {};
-    matches = data.matches || [];
-
-  } catch (error) {
-    alert("Failed to load data.");
-    console.error(error);
-  } finally {
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("leaderboard").style.display = "grid";
-    
-    populateDropdowns();
-    renderLeaderboard();
-
-    const savedSecret = localStorage.getItem("secret") || "";
-    document.getElementById("matchSecret").value = savedSecret;
-    document.getElementById("playerSecret").value = savedSecret;
-  }
-}
-
-// -------- DROPDOWNS --------
-function populateDropdowns() {
-  const ids = ["a1","a2","b1","b2"];
-
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = "";
-
-    for (let pid in players) {
-      const opt = document.createElement("option");
-      opt.value = pid; // STRING
-      opt.text = players[pid].name;
-      el.appendChild(opt);
+        const savedSecret = localStorage.getItem("secret") || "";
+        document.getElementById("matchSecret").value = savedSecret;
+        document.getElementById("playerSecret").value = savedSecret;
+      }
     }
-  });
-}
 
-// -------- LEADERBOARD --------
-function renderLeaderboard() {
-  const board = document.getElementById("leaderboard");
-  board.innerHTML = "";
+    // -------- DROPDOWNS --------
+    function populateDropdowns() {
+      const ids = ["a1", "a2", "b1", "b2"];
 
-  const arr = Object.values(players)
-    .sort((a,b) => b.rating - a.rating);
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        el.innerHTML = "";
 
-  arr.forEach((p, i) => {
-    const rank = i + 1;
-    const winRate = p.matches
-      ? (p.wins / p.matches * 100).toFixed(1)
-      : 0;
+        for (let pid in players) {
+          const opt = document.createElement("option");
+          opt.value = pid; // STRING
+          opt.text = players[pid].name;
+          el.appendChild(opt);
+        }
+      });
+    }
 
-    const div = document.createElement("div");
-    div.className = "card";
-    div.setAttribute('data-rank', rank);
+    // -------- LEADERBOARD --------
+    function renderLeaderboard() {
+      const board = document.getElementById("leaderboard");
+      board.innerHTML = "";
 
-    div.innerHTML = `
+      const arr = Object.values(players)
+        .sort((a, b) => b.rating - a.rating);
+
+      arr.forEach((p, i) => {
+        const rank = i + 1;
+        const winRate = p.matches
+          ? (p.wins / p.matches * 100).toFixed(1)
+          : 0;
+
+        const div = document.createElement("div");
+        div.className = "card";
+        div.setAttribute('data-rank', rank);
+
+        div.innerHTML = `
       <div class="card-header">
         <div class="player-name">${p.name}</div>
         <div class="rank">#${rank}</div>
@@ -678,104 +714,105 @@ function renderLeaderboard() {
       </div>
     `;
 
-    board.appendChild(div);
-  });
-}
-
-// -------- MATCH SUBMIT --------
-async function submitMatch() {
-  const mode = document.getElementById("mode").value;
-  const a1 = document.getElementById("a1").value;
-  const a2 = document.getElementById("a2").value;
-  const b1 = document.getElementById("b1").value;
-  const b2 = document.getElementById("b2").value;
-
-  const scoreA = Number(document.getElementById("scoreA").value);
-  const scoreB = Number(document.getElementById("scoreB").value);
-  const secret = document.getElementById("matchSecret").value;
-
-  if (!secret) return alert("Enter passcode");
-  if (scoreA === scoreB) return alert("No draws allowed");
-  if (scoreA < 0 || scoreB < 0) return alert("Invalid scores");
-
-  let teamA, teamB;
-
-  if (mode === "singles") {
-    teamA = [a1];
-    teamB = [b1];
-  } else {
-    teamA = [a1, a2];
-    teamB = [b1, b2];
-  }
-
-  const all = [...teamA, ...teamB];
-  if (new Set(all).size !== all.length) {
-    return alert("Duplicate players selected!");
-  }
-
-  const payload = {
-    type: "ADD_MATCH",
-    teamA,
-    teamB,
-    scoreA,
-    scoreB,
-    secret
-  };
-
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (data.status === "unauthorized") {
-      alert("Wrong passcode!");
-    } else {
-      localStorage.setItem("secret", secret);
-      closeModal('matchModal');
-      await loadPlayers();
+        board.appendChild(div);
+      });
     }
 
-  } catch (err) {
-    alert("Error saving match.");
-    console.error(err);
-  }
-}
+    // -------- MATCH SUBMIT --------
+    async function submitMatch() {
+      const mode = document.getElementById("mode").value;
+      const a1 = document.getElementById("a1").value;
+      const a2 = document.getElementById("a2").value;
+      const b1 = document.getElementById("b1").value;
+      const b2 = document.getElementById("b2").value;
 
-// -------- DELETE MATCH --------
-async function requestDeleteMatch(matchId) {
-  const secret = prompt("Enter passcode:");
+      const scoreA = Number(document.getElementById("scoreA").value);
+      const scoreB = Number(document.getElementById("scoreB").value);
+      const secret = document.getElementById("matchSecret").value;
 
-  if (!secret) return;
+      if (!secret) return alert("Enter passcode");
+      if (scoreA === scoreB) return alert("No draws allowed");
+      if (scoreA < 0 || scoreB < 0) return alert("Invalid scores");
 
-  const payload = {
-    type: "DELETE_MATCH",
-    matchId,
-    secret
-  };
+      let teamA, teamB;
 
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
+      if (mode === "singles") {
+        teamA = [a1];
+        teamB = [b1];
+      } else {
+        teamA = [a1, a2];
+        teamB = [b1, b2];
+      }
 
-  const data = await res.json();
+      const all = [...teamA, ...teamB];
+      if (new Set(all).size !== all.length) {
+        return alert("Duplicate players selected!");
+      }
 
-  if (data.status === "unauthorized") {
-    alert("Wrong passcode!");
-  } else {
-    await loadPlayers();
-    renderHistory();
-  }
-}
+      const payload = {
+        type: "ADD_MATCH",
+        teamA,
+        teamB,
+        scoreA,
+        scoreB,
+        secret
+      };
 
-// -------- INIT --------
-loadPlayers();
-</script>
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.status === "unauthorized") {
+          alert("Wrong passcode!");
+        } else {
+          localStorage.setItem("secret", secret);
+          closeModal('matchModal');
+          await loadPlayers();
+        }
+
+      } catch (err) {
+        alert("Error saving match.");
+        console.error(err);
+      }
+    }
+
+    // -------- DELETE MATCH --------
+    async function requestDeleteMatch(matchId) {
+      const secret = prompt("Enter passcode:");
+
+      if (!secret) return;
+
+      const payload = {
+        type: "DELETE_MATCH",
+        matchId,
+        secret
+      };
+
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (data.status === "unauthorized") {
+        alert("Wrong passcode!");
+      } else {
+        await loadPlayers();
+        renderHistory();
+      }
+    }
+
+    // -------- INIT --------
+    loadPlayers();
+  </script>
 
 </body>
+
 </html>
