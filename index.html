@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pickleball Tracker</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #0f172a;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .leaderboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .rank {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .add-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22c55e;
+      color: black;
+      font-size: 28px;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background: #1e293b;
+      padding: 20px;
+      margin: 10% auto;
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    select, input, button {
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+    }
+
+    button.submit {
+      background: #22c55e;
+      border: none;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>🏓 Pickleball Tracker</header>
+
+<div class="container">
+  <h2>Leaderboard</h2>
+  <div id="leaderboard" class="leaderboard"></div>
+</div>
+
+<button class="add-btn" onclick="openModal()">+</button>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+
+    <h3>Add Match</h3>
+
+    Mode:
+    <select id="mode">
+      <option value="doubles">Doubles</option>
+      <option value="singles">Singles</option>
+    </select>
+
+    Team A:
+    <select id="a1"></select>
+    <select id="a2"></select>
+
+    Team B:
+    <select id="b1"></select>
+    <select id="b2"></select>
+
+    Score:
+    <input id="scoreA" type="number" placeholder="Team A Score">
+    <input id="scoreB" type="number" placeholder="Team B Score">
+
+    🔐 Passcode:
+    <input id="secret" type="password" placeholder="Enter passcode">
+
+    <button class="submit" onclick="submitMatch()">Submit</button>
+    <button onclick="closeModal()">Close</button>
+
+  </div>
+</div>
+
+<script>
+const API = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+
+let players = {};
+
+// -------- LOAD PLAYERS --------
+async function loadPlayers() {
+  const res = await fetch(API);
+  const data = await res.json();
+  players = data.players;
+
+  populateDropdowns();
+  renderLeaderboard();
+
+  // Auto-fill saved passcode
+  document.getElementById("secret").value =
+    localStorage.getItem("secret") || "";
+}
+
+// -------- DROPDOWNS --------
+function populateDropdowns() {
+  const ids = ["a1","a2","b1","b2"];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = "";
+
+    for (let pid in players) {
+      const opt = document.createElement("option");
+      opt.value = pid;
+      opt.text = players[pid].name;
+      el.appendChild(opt);
+    }
+  });
+}
+
+// -------- LEADERBOARD --------
+function renderLeaderboard() {
+  const board = document.getElementById("leaderboard");
+  board.innerHTML = "";
+
+  const arr = Object.values(players)
+    .sort((a,b) => b.rating - a.rating);
+
+  arr.forEach((p, i) => {
+    const winRate = p.matches
+      ? (p.wins / p.matches * 100).toFixed(1)
+      : 0;
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div class="rank">#${i+1}</div>
+      <div>${p.name}</div>
+      <div>Rating: ${p.rating}</div>
+      <div>Win %: ${winRate}</div>
+    `;
+
+    board.appendChild(div);
+  });
+}
+
+// -------- MODAL --------
+function openModal() {
+  document.getElementById("modal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+// -------- MODE --------
+document.getElementById("mode").addEventListener("change", (e) => {
+  const isSingles = e.target.value === "singles";
+
+  a2.style.display = isSingles ? "none" : "block";
+  b2.style.display = isSingles ? "none" : "block";
+});
+
+// -------- SUBMIT --------
+async function submitMatch() {
+  const mode = document.getElementById("mode").value;
+
+  let teamA, teamB;
+
+  if (mode === "singles") {
+    teamA = [Number(a1.value)];
+    teamB = [Number(b1.value)];
+  } else {
+    teamA = [Number(a1.value), Number(a2.value)];
+    teamB = [Number(b1.value), Number(b2.value)];
+  }
+
+  const secret = document.getElementById("secret").value;
+
+  if (!secret) {
+    alert("Enter passcode");
+    return;
+  }
+
+  const payload = {
+    type: "ADD_MATCH",
+    teamA,
+    teamB,
+    scoreA: Number(scoreA.value),
+    scoreB: Number(scoreB.value),
+    secret
+  };
+
+  const res = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (data.status === "unauthorized") {
+    alert("Wrong passcode!");
+    return;
+  }
+
+  // Save passcode for future
+  localStorage.setItem("secret", secret);
+
+  closeModal();
+  loadPlayers();
+}
+
+// -------- INIT --------
+loadPlayers();
+</script>
+
+</body>
+</html>
