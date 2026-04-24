@@ -62,6 +62,7 @@
       background: linear-gradient(135deg, #10b981, #3b82f6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .container {
@@ -451,6 +452,19 @@
 </div>
 
 <div class="fab-container">
+  <!-- History / Delete FAB -->
+  <button class="fab fab-secondary" onclick="openHistoryModal()">
+    <div class="fab-tooltip">Match History</div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6"></line>
+      <line x1="8" y1="12" x2="21" y2="12"></line>
+      <line x1="8" y1="18" x2="21" y2="18"></line>
+      <line x1="3" y1="6" x2="3.01" y2="6"></line>
+      <line x1="3" y1="12" x2="3.01" y2="12"></line>
+      <line x1="3" y1="18" x2="3.01" y2="18"></line>
+    </svg>
+  </button>
+
   <!-- Add Player FAB -->
   <button class="fab fab-secondary" onclick="openPlayerModal()">
     <div class="fab-tooltip">Add New Player</div>
@@ -550,12 +564,31 @@
   </div>
 </div>
 
+<!-- HISTORY MODAL -->
+<div id="historyModal" class="modal">
+  <div class="modal-content" style="max-width: 500px;">
+    <button class="close-modal" onclick="closeModal('historyModal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    
+    <h3>Match History</h3>
+
+    <div id="historyList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycbyBdUZde0cmhiPFb0ofSXKT5fRSj0TGgjkQR65E_1GKT0p9LyvWQZvELSawBQ3V4y3C/exec";
 
 let players = {};
+let matches = [];
 
-// -------- LOAD PLAYERS --------
+// -------- LOAD DATA --------
 async function loadPlayers() {
   document.getElementById("loader").style.display = "flex";
   document.getElementById("leaderboard").style.display = "none";
@@ -564,6 +597,7 @@ async function loadPlayers() {
     const res = await fetch(API);
     const data = await res.json();
     players = data.players;
+    matches = data.matches || [];
   } catch (error) {
     console.error("Error fetching data", error);
   } finally {
@@ -645,12 +679,11 @@ function renderLeaderboard() {
 }
 
 // -------- MODALS --------
-function openMatchModal() {
-  document.getElementById("matchModal").classList.add("active");
-}
-
-function openPlayerModal() {
-  document.getElementById("playerModal").classList.add("active");
+function openMatchModal() {  document.getElementById("matchModal").classList.add("active"); }
+function openPlayerModal() { document.getElementById("playerModal").classList.add("active"); }
+function openHistoryModal() { 
+  document.getElementById("historyModal").classList.add("active");
+  renderHistory();
 }
 
 function closeModal(modalId) {
@@ -670,6 +703,85 @@ document.getElementById("mode").addEventListener("change", (e) => {
   document.getElementById("a2").style.display = isSingles ? "none" : "block";
   document.getElementById("b2").style.display = isSingles ? "none" : "block";
 });
+
+// -------- MATCH HISTORY --------
+function renderHistory() {
+  const container = document.getElementById("historyList");
+  container.innerHTML = "";
+  
+  if (!matches || matches.length === 0) {
+    container.innerHTML = "<div style='text-align:center; color:var(--text-muted);'>No match history found.</div>";
+    return;
+  }
+
+  matches.forEach(m => {
+    const namesA = m.teamA.map(id => players[id] ? players[id].name : "Unknown").join(" & ");
+    const namesB = m.teamB.map(id => players[id] ? players[id].name : "Unknown").join(" & ");
+    
+    const dateStr = new Date(m.date).toLocaleDateString();
+    const winnerA = m.scoreA > m.scoreB;
+    const winnerB = m.scoreB > m.scoreA;
+
+    const div = document.createElement("div");
+    div.style = "padding: 16px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center;";
+    
+    div.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">${dateStr}</div>
+        <div style="font-weight: 600; font-size: 16px;">
+          <span style="color: ${winnerA ? 'var(--primary)' : 'white'}">${namesA} (${m.scoreA})</span>
+          <span style="color: var(--text-muted); margin: 0 8px;">vs</span>
+          <span style="color: ${winnerB ? 'var(--primary)' : 'white'}">${namesB} (${m.scoreB})</span>
+        </div>
+      </div>
+      <button onclick="requestDeleteMatch('${m.id}')" style="background: transparent; border: none; cursor: pointer; color: #ef4444; padding: 8px;" title="Delete match">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+async function requestDeleteMatch(matchId) {
+  const savedSecret = localStorage.getItem("secret") || "";
+  const secret = prompt("Enter admin passcode to delete this match:", savedSecret);
+  
+  if (secret === null) return;
+  if (!secret) {
+    alert("Passcode is required.");
+    return;
+  }
+  
+  const payload = {
+    type: "DELETE_MATCH",
+    matchId: matchId,
+    secret: secret
+  };
+  
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    
+    if (data.status === "unauthorized") {
+      alert("Wrong passcode!");
+    } else {
+      localStorage.setItem("secret", secret);
+      await loadPlayers();
+      renderHistory(); 
+    }
+  } catch (err) {
+    alert("Error deleting match.");
+    console.error(err);
+  }
+}
 
 // -------- SUBMIT MATCH --------
 async function submitMatch() {
@@ -718,6 +830,7 @@ async function submitMatch() {
   try {
     const res = await fetch(API, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
     
@@ -770,6 +883,7 @@ async function submitPlayer() {
   try {
     const res = await fetch(API, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
     
