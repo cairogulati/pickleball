@@ -596,10 +596,15 @@ async function loadPlayers() {
   try {
     const res = await fetch(API);
     const data = await res.json();
-    players = data.players;
+
+    console.log("API DATA:", data);
+
+    players = data.players || {};
     matches = data.matches || [];
+
   } catch (error) {
-    console.error("Error fetching data", error);
+    alert("Failed to load data.");
+    console.error(error);
   } finally {
     document.getElementById("loader").style.display = "none";
     document.getElementById("leaderboard").style.display = "grid";
@@ -607,7 +612,6 @@ async function loadPlayers() {
     populateDropdowns();
     renderLeaderboard();
 
-    // Auto-fill saved passcode
     const savedSecret = localStorage.getItem("secret") || "";
     document.getElementById("matchSecret").value = savedSecret;
     document.getElementById("playerSecret").value = savedSecret;
@@ -624,7 +628,7 @@ function populateDropdowns() {
 
     for (let pid in players) {
       const opt = document.createElement("option");
-      opt.value = pid;
+      opt.value = pid; // STRING
       opt.text = players[pid].name;
       el.appendChild(opt);
     }
@@ -678,152 +682,43 @@ function renderLeaderboard() {
   });
 }
 
-// -------- MODALS --------
-function openMatchModal() {  document.getElementById("matchModal").classList.add("active"); }
-function openPlayerModal() { document.getElementById("playerModal").classList.add("active"); }
-function openHistoryModal() { 
-  document.getElementById("historyModal").classList.add("active");
-  renderHistory();
-}
-
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove("active");
-}
-
-/* Close modal on outside click */
-window.onclick = function(event) {
-  if (event.target.classList.contains('modal')) {
-    event.target.classList.remove('active');
-  }
-}
-
-// -------- MODE TOGGLE --------
-document.getElementById("mode").addEventListener("change", (e) => {
-  const isSingles = e.target.value === "singles";
-  document.getElementById("a2").style.display = isSingles ? "none" : "block";
-  document.getElementById("b2").style.display = isSingles ? "none" : "block";
-});
-
-// -------- MATCH HISTORY --------
-function renderHistory() {
-  const container = document.getElementById("historyList");
-  container.innerHTML = "";
-  
-  if (!matches || matches.length === 0) {
-    container.innerHTML = "<div style='text-align:center; color:var(--text-muted);'>No match history found.</div>";
-    return;
-  }
-
-  matches.forEach(m => {
-    const namesA = m.teamA.map(id => players[id] ? players[id].name : "Unknown").join(" & ");
-    const namesB = m.teamB.map(id => players[id] ? players[id].name : "Unknown").join(" & ");
-    
-    const dateStr = new Date(m.date).toLocaleDateString();
-    const winnerA = m.scoreA > m.scoreB;
-    const winnerB = m.scoreB > m.scoreA;
-
-    const div = document.createElement("div");
-    div.style = "padding: 16px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center;";
-    
-    div.innerHTML = `
-      <div style="flex:1;">
-        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">${dateStr}</div>
-        <div style="font-weight: 600; font-size: 16px;">
-          <span style="color: ${winnerA ? 'var(--primary)' : 'white'}">${namesA} (${m.scoreA})</span>
-          <span style="color: var(--text-muted); margin: 0 8px;">vs</span>
-          <span style="color: ${winnerB ? 'var(--primary)' : 'white'}">${namesB} (${m.scoreB})</span>
-        </div>
-      </div>
-      <button onclick="requestDeleteMatch('${m.id}')" style="background: transparent; border: none; cursor: pointer; color: #ef4444; padding: 8px;" title="Delete match">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-        </svg>
-      </button>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-async function requestDeleteMatch(matchId) {
-  const savedSecret = localStorage.getItem("secret") || "";
-  const secret = prompt("Enter admin passcode to delete this match:", savedSecret);
-  
-  if (secret === null) return;
-  if (!secret) {
-    alert("Passcode is required.");
-    return;
-  }
-  
-  const payload = {
-    type: "DELETE_MATCH",
-    matchId: matchId,
-    secret: secret
-  };
-  
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    
-    if (data.status === "unauthorized") {
-      alert("Wrong passcode!");
-    } else {
-      localStorage.setItem("secret", secret);
-      await loadPlayers();
-      renderHistory(); 
-    }
-  } catch (err) {
-    alert("Error deleting match.");
-    console.error(err);
-  }
-}
-
-// -------- SUBMIT MATCH --------
+// -------- MATCH SUBMIT --------
 async function submitMatch() {
   const mode = document.getElementById("mode").value;
-  const a1 = document.getElementById("a1");
-  const a2 = document.getElementById("a2");
-  const b1 = document.getElementById("b1");
-  const b2 = document.getElementById("b2");
-  const scoreA = document.getElementById("scoreA");
-  const scoreB = document.getElementById("scoreB");
+  const a1 = document.getElementById("a1").value;
+  const a2 = document.getElementById("a2").value;
+  const b1 = document.getElementById("b1").value;
+  const b2 = document.getElementById("b2").value;
+
+  const scoreA = Number(document.getElementById("scoreA").value);
+  const scoreB = Number(document.getElementById("scoreB").value);
   const secret = document.getElementById("matchSecret").value;
+
+  if (!secret) return alert("Enter passcode");
+  if (scoreA === scoreB) return alert("No draws allowed");
+  if (scoreA < 0 || scoreB < 0) return alert("Invalid scores");
 
   let teamA, teamB;
 
   if (mode === "singles") {
-    teamA = [Number(a1.value)];
-    teamB = [Number(b1.value)];
+    teamA = [a1];
+    teamB = [b1];
   } else {
-    teamA = [Number(a1.value), Number(a2.value)];
-    teamB = [Number(b1.value), Number(b2.value)];
+    teamA = [a1, a2];
+    teamB = [b1, b2];
   }
 
-  if (!secret) {
-    alert("Please enter the passcode.");
-    return;
+  const all = [...teamA, ...teamB];
+  if (new Set(all).size !== all.length) {
+    return alert("Duplicate players selected!");
   }
-  
-  if (!scoreA.value || !scoreB.value) {
-    alert("Please enter scores for both teams.");
-    return;
-  }
-
-  const btn = document.getElementById("btnSubmitMatch");
-  btn.innerText = "Submitting...";
-  btn.disabled = true;
 
   const payload = {
     type: "ADD_MATCH",
     teamA,
     teamB,
-    scoreA: Number(scoreA.value),
-    scoreB: Number(scoreB.value),
+    scoreA,
+    scoreB,
     secret
   };
 
@@ -833,7 +728,7 @@ async function submitMatch() {
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
-    
+
     const data = await res.json();
 
     if (data.status === "unauthorized") {
@@ -841,68 +736,40 @@ async function submitMatch() {
     } else {
       localStorage.setItem("secret", secret);
       closeModal('matchModal');
-      scoreA.value = "";
-      scoreB.value = "";
       await loadPlayers();
     }
+
   } catch (err) {
-    alert("Error saving match. Try again.");
+    alert("Error saving match.");
     console.error(err);
-  } finally {
-    btn.innerText = "Submit Result";
-    btn.disabled = false;
   }
 }
 
-// -------- SUBMIT PLAYER --------
-async function submitPlayer() {
-  const nameInput = document.getElementById("playerName");
-  const name = nameInput.value.trim();
-  const secret = document.getElementById("playerSecret").value;
+// -------- DELETE MATCH --------
+async function requestDeleteMatch(matchId) {
+  const secret = prompt("Enter passcode:");
 
-  if (!name) {
-    alert("Please enter a player name.");
-    return;
-  }
-  
-  if (!secret) {
-    alert("Please enter the passcode.");
-    return;
-  }
-
-  const btn = document.getElementById("btnSubmitPlayer");
-  btn.innerText = "Adding Player...";
-  btn.disabled = true;
+  if (!secret) return;
 
   const payload = {
-    type: "ADD_PLAYER",
-    name: name,
-    secret: secret
+    type: "DELETE_MATCH",
+    matchId,
+    secret
   };
 
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    
-    const data = await res.json();
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
 
-    if (data.status === "unauthorized") {
-      alert("Wrong passcode!");
-    } else {
-      localStorage.setItem("secret", secret);
-      closeModal('playerModal');
-      nameInput.value = "";
-      await loadPlayers();
-    }
-  } catch (err) {
-    alert("Error adding player. Try again.");
-    console.error(err);
-  } finally {
-    btn.innerText = "Add Player";
-    btn.disabled = false;
+  const data = await res.json();
+
+  if (data.status === "unauthorized") {
+    alert("Wrong passcode!");
+  } else {
+    await loadPlayers();
+    renderHistory();
   }
 }
 
