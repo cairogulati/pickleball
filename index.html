@@ -638,6 +638,9 @@
         players = data.players || {};
         matches = data.matches || [];
 
+        // Inject Dummy/Guest player
+        players["-1"] = { id: -1, name: "Guest / Dummy", rating: 1000, matches: 0, wins: 0 };
+
       } catch (error) {
         alert("Failed to load data.");
         console.error(error);
@@ -677,6 +680,7 @@
       board.innerHTML = "";
 
       const arr = Object.values(players)
+        .filter(p => String(p.id) !== "-1" && p.matches > 0 && !(p.name && p.name.toLowerCase().includes("kitchen")))
         .sort((a, b) => b.rating - a.rating);
 
       arr.forEach((p, i) => {
@@ -726,11 +730,14 @@
       const b1 = document.getElementById("b1").value;
       const b2 = document.getElementById("b2").value;
 
-      const scoreA = Number(document.getElementById("scoreA").value);
-      const scoreB = Number(document.getElementById("scoreB").value);
+      const scoreAStr = document.getElementById("scoreA").value;
+      const scoreBStr = document.getElementById("scoreB").value;
+      const scoreA = Number(scoreAStr);
+      const scoreB = Number(scoreBStr);
       const secret = document.getElementById("matchSecret").value;
 
       if (!secret) return alert("Enter passcode");
+      if (scoreAStr === "" || scoreBStr === "") return alert("Please enter scores for both teams.");
       if (scoreA === scoreB) return alert("No draws allowed");
       if (scoreA < 0 || scoreB < 0) return alert("Invalid scores");
 
@@ -745,7 +752,8 @@
       }
 
       const all = [...teamA, ...teamB];
-      if (new Set(all).size !== all.length) {
+      const realPlayers = all.filter(id => String(id) !== "-1");
+      if (new Set(realPlayers).size !== realPlayers.length) {
         return alert("Duplicate players selected!");
       }
 
@@ -819,6 +827,11 @@
     }
 
     function openMatchModal() {
+      const modeEl = document.getElementById("mode");
+      modeEl.value = "doubles";
+      modeEl.dispatchEvent(new Event('change'));
+      document.getElementById("scoreA").value = "";
+      document.getElementById("scoreB").value = "";
       openModal('matchModal');
     }
 
@@ -903,6 +916,12 @@
     }
 
     // -------- INIT --------
+    document.getElementById("mode").addEventListener("change", (e) => {
+      const isSingles = e.target.value === "singles";
+      document.getElementById("a2").style.display = isSingles ? "none" : "block";
+      document.getElementById("b2").style.display = isSingles ? "none" : "block";
+    });
+
     loadPlayers();
   </script>
 
