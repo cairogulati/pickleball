@@ -809,6 +809,99 @@
       }
     }
 
+    // -------- MODALS --------
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function openMatchModal() {
+      openModal('matchModal');
+    }
+
+    function openPlayerModal() {
+      openModal('playerModal');
+    }
+
+    function openHistoryModal() {
+      if(typeof renderHistory === 'function') renderHistory();
+      openModal('historyModal');
+    }
+
+    // -------- ADD PLAYER --------
+    async function submitPlayer() {
+      const name = document.getElementById("playerName").value.trim();
+      const secret = document.getElementById("playerSecret").value;
+
+      if (!name) return alert("Enter player name");
+      if (!secret) return alert("Enter passcode");
+
+      const payload = {
+        type: "ADD_PLAYER",
+        name: name,
+        secret: secret
+      };
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.status === "unauthorized") {
+          alert("Wrong passcode!");
+        } else {
+          localStorage.setItem("secret", secret);
+          closeModal('playerModal');
+          document.getElementById("playerName").value = "";
+          await loadPlayers();
+        }
+
+      } catch (err) {
+        alert("Error saving player.");
+        console.error(err);
+      }
+    }
+
+    // -------- RENDER HISTORY --------
+    function renderHistory() {
+      const list = document.getElementById("historyList");
+      if (!list) return;
+      list.innerHTML = "";
+      
+      if (!matches || matches.length === 0) {
+        list.innerHTML = `<div style="color:var(--text-muted); padding: 12px; text-align:center;">No matches recorded yet.</div>`;
+        return;
+      }
+      
+      matches.forEach(m => {
+        const div = document.createElement("div");
+        div.style = "background: rgba(30,41,59,0.5); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center;";
+        
+        let teamAStr = m.teamA.map(id => players[id]?.name || "Unknown").join(" & ");
+        let teamBStr = m.teamB.map(id => players[id]?.name || "Unknown").join(" & ");
+        
+        div.innerHTML = `
+          <div>
+            <div style="font-size: 14px; margin-bottom: 4px;">
+              <span style="color:#10b981; font-weight: 600;">${teamAStr}</span> vs <span style="color:#3b82f6; font-weight: 600;">${teamBStr}</span>
+            </div>
+            <div style="font-size: 18px; font-weight: 800;">
+              ${m.scoreA} - ${m.scoreB}
+            </div>
+          </div>
+          <button onclick="requestDeleteMatch('${m.id}')" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 6px 10px; cursor: pointer;">Delete</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
     // -------- INIT --------
     loadPlayers();
   </script>
